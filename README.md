@@ -20,6 +20,6 @@ python ./omni-ner/code/create_arc_dataset.py --config_path ./omni-ner/conf/r_arc
 accelerate launch ./omni-ner/code/train_arc.py \
 --config-name conf_r_arc \
 seed=42 \
-train_params.eval_frequency=100 \
-use_wandb=false
+train_params.eval_frequency=1000 \
+use_wandb=true
 ```
