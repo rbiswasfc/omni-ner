@@ -12,7 +12,12 @@ model:
   backbone_path: microsoft/deberta-v3-base
   max_length: 1296
   num_proc: 4
-  n_groups: ??
+  skip_dropout: false
+  use_gradient_checkpointing: false
+  arcface:
+    margin: 0.5
+    scale: 30
+    n_groups: ??
 
 
 train_params:

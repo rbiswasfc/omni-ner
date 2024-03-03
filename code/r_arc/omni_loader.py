@@ -11,7 +11,6 @@ class OmniNERCollator:
     """
     Data collator for omni-ner task
     """
-
     tokenizer: PreTrainedTokenizerBase
     padding: Union[bool, str, PaddingStrategy] = True
     max_length: Optional[int] = None
@@ -56,7 +55,7 @@ class OmniNERCollator:
         batch['span_tail_idxs'] = span_tail_idxs
 
         if labels is not None:
-            labels = [ex_labels + [-1] * (max_num_spans - len(ex_labels)) for ex_labels in labels]  # -1 for padding
+            labels = [ex_labels + [-100] * (max_num_spans - len(ex_labels)) for ex_labels in labels]
             batch["labels"] = labels
 
         # cast to tensor ---

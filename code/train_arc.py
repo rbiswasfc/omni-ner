@@ -17,6 +17,8 @@ from tqdm.auto import tqdm
 try:
     from r_arc.omni_dataset import OmniNERDataset
     from r_arc.omni_loader import OmniNERCollator, show_batch
+    from r_arc.omni_model import OnmiNERModel
+    from r_arc.omni_optimizer import get_optimizer
     from utils.train_utils import AverageMeter, get_lr, setup_training_run
 
 except Exception as e:
@@ -69,7 +71,7 @@ def run_training(cfg):
             entity_types.add(anno["entity_type"])
     entity_types = sorted(list(entity_types))
 
-    cfg.model.n_groups = len(entity_types)
+    cfg.model.arcface.n_groups = len(entity_types)
     label2id = {k: i for i, k in enumerate(entity_types)}
     id2label = {v: k for k, v in label2id.items()}
     accelerator.print(f"# entity types: {len(entity_types)}")
@@ -123,22 +125,18 @@ def run_training(cfg):
     accelerator.print(json.dumps(cfg_dict, indent=4))
     print_line()
 
-    # # ------- Model ---------------------------------------------------------------------#
-    # print_line()
-    # accelerator.print("creating the PII Data Detection model...")
-    # num_labels = len(label2id)
-    # model = DebertaForPII.from_pretrained(
-    #     cfg.model.backbone_path,
-    #     num_labels=num_labels,
-    #     id2label=id2label,
-    #     label2id=label2id,
-    # )
-    # print_line()
+    # ------- Model ---------------------------------------------------------------------#
+    print_line()
+    accelerator.print("creating the OnmiNERModel...")
+    model = OnmiNERModel(cfg)
+    print_line()
 
     # # ------- Optimizer -----------------------------------------------------------------#
-    # print_line()
-    # accelerator.print("creating the optimizer...")
-    # optimizer = get_optimizer(cfg, model, print_fn=accelerator.print)
+    print_line()
+    accelerator.print("creating the optimizer...")
+    optimizer = get_optimizer(cfg, model, print_fn=accelerator.print)
+    print_line()
+
     # # ------- Prepare -------------------------------------------------------------------#
 
     # model, optimizer, train_dl, valid_dl = accelerator.prepare(
