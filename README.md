@@ -11,9 +11,15 @@ Building a foundation model for NER tasks
 
 
 # Create Arc Dataset
-```python
-python create_arc_dataset.py \
---input_path ../data/omni_ner_dataset.json \
---config_path ../conf/r_arc/conf_r_arc.yaml \
---output_dir ../data/arc
+```bash
+python ./omni-ner/code/create_arc_dataset.py --config_path ./omni-ner/conf/r_arc/conf_r_arc.yaml
+```
+
+# Train Arc Model
+```bash
+accelerate launch ./omni-ner/code/train_arc.py \
+--config-name conf_r_arc \
+seed=42 \
+train_params.eval_frequency=100 \
+use_wandb=false
 ```
