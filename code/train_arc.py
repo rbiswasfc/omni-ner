@@ -75,15 +75,21 @@ def run_training(cfg):
     accelerator.print(f"# entity types: {len(entity_types)}")
 
     # convert labels to ids in the datasets ---
+    print_line()
+
     def convert_to_ids(examples):
         labels = []
-        for ex in examples:
-            ex_labels = [label2id[l] for l in ex["labels"]]
+        for ex_labels in examples['labels']:
+            ex_labels = [label2id[l] for l in ex_labels]
             labels.append(ex_labels)
         return {"labels": labels}
 
+    # print(train_ds[0]['labels'])
+
     train_ds = train_ds.map(convert_to_ids, batched=True)
     valid_ds = valid_ds.map(convert_to_ids, batched=True)
+
+    print_line()
 
     # ------- data loaders --------------------------------------------------------------#
     data_collector = OmniNERCollator(tokenizer=tokenizer, pad_to_multiple_of=16)

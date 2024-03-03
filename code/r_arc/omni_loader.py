@@ -97,7 +97,7 @@ def show_batch(batch, tokenizer, id2label, num_examples=8, task="train", print_f
 
         if "labels" in batch:
             labels = batch['labels'][i]
-            labels = [id2label.get(label, 'NA') for label in labels]
+            labels = [id2label.get(label.item(), 'NA') for label in labels]
 
         for span_idx in range(num_spans):
             start, end = batch['span_head_idxs'][i][span_idx], batch['span_tail_idxs'][i][span_idx]

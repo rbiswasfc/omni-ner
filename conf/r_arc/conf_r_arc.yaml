@@ -1,3 +1,4 @@
+seed: 42
 input_path: ../data/omni_ner_dataset.json
 use_wandb: False
 
