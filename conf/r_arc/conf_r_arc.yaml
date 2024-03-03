@@ -1,0 +1,8 @@
+data:
+  test_fraction: 0.02
+  content_multiplier: 4
+  
+model:
+  backbone_path: microsoft/deberta-v3-base
+  max_length: 1296
+  num_proc: 4
