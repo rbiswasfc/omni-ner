@@ -71,4 +71,3 @@ def get_optimizer(cfg, model, print_fn=None):
     )
 
     return optimizer
-    return optimizer

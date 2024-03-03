@@ -1,12 +1,12 @@
 seed: 42
-input_path: ../data/omni_ner_dataset.json
+input_path: ../datasets/omni_ner_dataset.json
 use_wandb: False
 
 data:
   test_fraction: 0.025
   content_multiplier: 4
   n_descriptions_per_entity: 4
-  output_dir: ../data/arc
+  output_dir: ../datasets/r_arc
 
 model:
   backbone_path: microsoft/deberta-v3-base
@@ -16,19 +16,17 @@ model:
   use_gradient_checkpointing: false
   arcface:
     margin: 0.5
-    scale: 30
+    scale: 20
     n_groups: ??
-
 
 train_params:
   per_device_train_batch_size: 4
   per_device_eval_batch_size: 4 # 4
   num_train_epochs: 2
-  gradient_accumulation_steps: 2
-  warmup_pct: 0.1
+  gradient_accumulation_steps: 4
+  warmup_pct: 0.25
   eval_frequency: 100
-  patience: 10
-
+  patience: 100
 
 optimizer:
   name: AdamW8bit
@@ -38,10 +36,10 @@ optimizer:
   max_grad_norm: 0.5
 
 outputs:
-  model_dir: ../models/r_alpha_base
+  model_dir: ../models/r_arc_omni_ner
 
 wandb:
-  project: pii-detection
+  project: omni-ner
   run_name: exp001-baseline
   tags:
     - deberta
