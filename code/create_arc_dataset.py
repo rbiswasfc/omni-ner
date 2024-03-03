@@ -71,20 +71,19 @@ def get_meta_examples(cfg, examples):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--input_path", required=True, help="input file")
     ap.add_argument("--config_path", required=True, help="config path")
-    ap.add_argument("--output_dir", required=True, help="output file")
     args = ap.parse_args()
 
-    os.makedirs(args.output_dir, exist_ok=True)
+    cfg = OmegaConf.load(args.config_path)
+    output_dir = cfg.data.output_dir
 
-    with open(args.input_path, "r") as f:
+    os.makedirs(output_dir, exist_ok=True)
+
+    with open(cfg.input_path, "r") as f:
         examples = json.load(f)
     n_examples = len(examples)
 
     print(f"# of examples in omni-ner dataset: {len(examples)}")
-
-    cfg = OmegaConf.load(args.config_path)
 
     # train - test split ---
     test_frac = cfg.data.test_fraction
@@ -110,12 +109,11 @@ if __name__ == "__main__":
     final_test_ds = concatenate_datasets(final_test_ds).shuffle(seed=42)
 
     # save datasets ---
-    final_train_ds.save_to_disk(os.path.join(args.output_dir, "train"))
-    final_test_ds.save_to_disk(os.path.join(args.output_dir, "test"))
+    final_train_ds.save_to_disk(os.path.join(output_dir, "train"))
+    final_test_ds.save_to_disk(os.path.join(output_dir, "test"))
 
-    print(f"Saved Omni-NER train & test Datasets to {args.output_dir}")
+    print(f"Saved Omni-NER train & test Datasets to {output_dir}")
     print(f"# of examples in final train dataset: {len(final_train_ds)}")
     print(f"# of examples in final test dataset: {len(final_test_ds)}")
 
-    print(f"Example: {final_test_ds[0]}")
     print("Done!")
