@@ -31,8 +31,8 @@ train_params:
 
 optimizer:
   name: AdamW8bit
-  head_lr: 5e-6
-  lr: 1e-5
+  head_lr: 2e-6
+  lr: 2e-5
   weight_decay: 1e-3
   max_grad_norm: 0.5
 
