@@ -1,9 +1,10 @@
 seed: 42
 input_path: ../datasets/omni_ner_dataset_v1/omni_ner_dataset.json
-use_wandb: False
+use_wandb: false
+save_model: true
 
 data:
-  test_fraction: 0.025
+  test_fraction: 0.01
   content_multiplier: 4
   n_descriptions_per_entity: 4
   output_dir: ../datasets/cache/r_arc
