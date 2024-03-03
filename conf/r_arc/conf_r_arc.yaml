@@ -27,7 +27,7 @@ train_params:
   gradient_accumulation_steps: 4
   warmup_pct: 0.25
   eval_frequency: 100
-  patience: 100
+  patience: 1000
 
 optimizer:
   name: AdamW8bit
