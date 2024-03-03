@@ -166,9 +166,9 @@ class OnmiNERModel(nn.Module):
             feature_vector.append(span_vec_i)
 
         embeddings = torch.stack(feature_vector)  # (bs, num_spans, h)
-        print(embeddings.shape)
+        # print(embeddings.shape)
         embeddings = self.layer_norm(embeddings)  # (bs, num_spans, h)
-        print(embeddings.shape)
+        print(embeddings[0])
 
         loss = None
         if labels is not None:
@@ -176,6 +176,7 @@ class OnmiNERModel(nn.Module):
             # reshape embeddings and labels
             embeddings = embeddings.reshape(-1, embeddings.size(-1))
             labels = labels.reshape(-1)
+            print(f"embeddings shape: {embeddings.shape}, labels shape: {labels.shape}")
             loss = self.loss_fn(embeddings, labels)
 
         return loss
