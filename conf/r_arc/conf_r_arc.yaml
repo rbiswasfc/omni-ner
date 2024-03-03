@@ -1,12 +1,12 @@
 seed: 42
-input_path: ../datasets/omni_ner_dataset.json
+input_path: ../datasets/omni_ner_dataset_v1/omni_ner_dataset.json
 use_wandb: False
 
 data:
   test_fraction: 0.025
   content_multiplier: 4
   n_descriptions_per_entity: 4
-  output_dir: ../datasets/r_arc
+  output_dir: ../datasets/cache/r_arc
 
 model:
   backbone_path: microsoft/deberta-v3-base
