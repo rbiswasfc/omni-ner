@@ -60,8 +60,8 @@ class ArcFaceLoss(nn.modules.Module):
         in_features = embedding_size
         out_features = num_classes
 
-        # self.head = ArcMarginProduct_subcenter(in_features, out_features)
-        self.head = ArcMarginProduct(in_features, out_features)
+        self.head = ArcMarginProduct_subcenter(in_features, out_features)
+        # self.head = ArcMarginProduct(in_features, out_features)
 
         self.crit = nn.CrossEntropyLoss(reduction="mean", ignore_index=-100)
         self.init(s, m)
