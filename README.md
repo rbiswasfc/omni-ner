@@ -8,3 +8,12 @@ Building a foundation model for NER tasks
 # Omni-NER Dataset
 
 # Omni-NER Model
+
+
+# Create Arc Dataset
+```python
+python create_arc_dataset.py \
+--input_path ../data/omni_ner_dataset.json \
+--config_path ../conf/r_arc/conf_r_arc.yaml \
+--output_dir ../data/arc
+```

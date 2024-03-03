@@ -5,7 +5,7 @@ import random
 import uuid
 from copy import deepcopy
 
-from datasets import concatenate_datasets, save_to_disk
+from datasets import concatenate_datasets
 from omegaconf import OmegaConf
 
 try:
@@ -110,8 +110,8 @@ if __name__ == "__main__":
     final_test_ds = concatenate_datasets(final_test_ds).shuffle(seed=42)
 
     # save datasets ---
-    save_to_disk(final_train_ds, os.path.join(args.output_dir, "train"))
-    save_to_disk(final_test_ds, os.path.join(args.output_dir, "test"))
+    final_train_ds.save_to_disk(os.path.join(args.output_dir, "train"))
+    final_test_ds.save_to_disk(os.path.join(args.output_dir, "test"))
 
     print(f"Saved Omni-NER train & test Datasets to {args.output_dir}")
     print(f"# of examples in final train dataset: {len(final_train_ds)}")
