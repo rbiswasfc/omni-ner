@@ -60,7 +60,9 @@ class ArcFaceLoss(nn.modules.Module):
         in_features = embedding_size
         out_features = num_classes
 
-        self.head = ArcMarginProduct_subcenter(in_features, out_features)
+        # self.head = ArcMarginProduct_subcenter(in_features, out_features)
+        self.head = ArcMarginProduct(in_features, out_features)
+
         self.crit = nn.CrossEntropyLoss(reduction="mean", ignore_index=-100)
         self.init(s, m)
 
@@ -135,11 +137,6 @@ class OnmiNERModel(nn.Module):
             num_classes=cfg.model.arcface.n_groups,
         )
 
-    def get_embeddings(self, batch):
-        x = self.text_encoder.encode(batch)
-        embeddings = self.neck(x)
-        return embeddings
-
     def forward(
         self,
         input_ids,
@@ -169,14 +166,16 @@ class OnmiNERModel(nn.Module):
             feature_vector.append(span_vec_i)
 
         embeddings = torch.stack(feature_vector)  # (bs, num_spans, h)
+        print(embeddings.shape)
         embeddings = self.layer_norm(embeddings)  # (bs, num_spans, h)
+        print(embeddings.shape)
 
         loss = None
         if labels is not None:
             labels = labels.long()  # (bs, num_spans)
             # reshape embeddings and labels
-            embeddings = embeddings.view(-1, embeddings.size(-1))
-            labels = labels.view(-1)
+            embeddings = embeddings.reshape(-1, embeddings.size(-1))
+            labels = labels.reshape(-1)
             loss = self.loss_fn(embeddings, labels)
 
         return loss
