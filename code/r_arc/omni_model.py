@@ -77,6 +77,8 @@ class ArcFaceLoss(nn.modules.Module):
     def forward(self, embeddings: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
 
         logits = self.head(embeddings)
+        print(f"logits shape: {logits.shape}")
+        print(f"logits[0]: {logits[0]}")
         logits = logits.float()
         cosine = logits
         sine = torch.sqrt(1.0 - torch.pow(cosine, 2))
@@ -168,7 +170,7 @@ class OnmiNERModel(nn.Module):
         embeddings = torch.stack(feature_vector)  # (bs, num_spans, h)
         # print(embeddings.shape)
         embeddings = self.layer_norm(embeddings)  # (bs, num_spans, h)
-        print(embeddings[0])
+        # print(embeddings[0])
 
         loss = None
         if labels is not None:
@@ -177,6 +179,8 @@ class OnmiNERModel(nn.Module):
             embeddings = embeddings.reshape(-1, embeddings.size(-1))
             labels = labels.reshape(-1)
             print(f"embeddings shape: {embeddings.shape}, labels shape: {labels.shape}")
+            print(f"embeddings[0]: {embeddings[0]}")
+            print(f"labels[0]: {labels[0]}")
             loss = self.loss_fn(embeddings, labels)
 
         return loss
