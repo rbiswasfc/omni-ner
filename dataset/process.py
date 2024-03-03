@@ -1,6 +1,7 @@
 import argparse
 import glob
 import json
+import os
 import uuid
 
 import pandas as pd
@@ -153,8 +154,9 @@ if __name__ == "__main__":
 
     print(f"# of annotated texts after processing: {len(processed_texts)}")
 
-    with open(f"{args.output_dir}/omni_ner_dataset.json", "w") as f:
+    output_path = os.path.join(args.output_dir, "omni_ner_dataset.json")
+    with open(output_path, "w") as f:
         json.dump(processed_examples, f)
 
-    print(f"Saved the processed dataset to {args.output_dir}/omni_ner_dataset.json")
+    print(f"Saved the processed dataset to {output_path}")
     print("Done!")
