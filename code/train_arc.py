@@ -25,7 +25,7 @@ except Exception as e:
 
 logger = get_logger(__name__)
 
-# -------- Evaluation -------------------------------------------------------------#
+# -------- Evaluation -------------------------------------------------------------------#
 
 
 # -------- Main Function ----------------------------------------------------------------#
@@ -61,6 +61,28 @@ def run_training(cfg):
     with accelerator.main_process_first():
         dataset_creator = OmniNERDataset(cfg)
     tokenizer = dataset_creator.tokenizer
+
+    # add arcface labels ---
+    entity_types = set()
+    for ex in examples:
+        for anno in ex["annotations"]:
+            entity_types.add(anno["entity_type"])
+    entity_types = sorted(list(entity_types))
+
+    cfg.model.n_groups = len(entity_types)
+    label2id = {k: i for i, k in enumerate(entity_types)}
+    accelerator.print(f"# entity types: {len(entity_types)}")
+
+    # convert labels to ids in the datasets ---
+    def convert_to_ids(examples):
+        labels = []
+        for ex in examples:
+            ex_labels = [label2id[l] for l in ex["labels"]]
+            labels.append(ex_labels)
+        return {"labels": labels}
+
+    train_ds = train_ds.map(convert_to_ids, batched=True)
+    valid_ds = valid_ds.map(convert_to_ids, batched=True)
 
     # ------- data loaders --------------------------------------------------------------#
     data_collector = OmniNERCollator(tokenizer=tokenizer, pad_to_multiple_of=16)
