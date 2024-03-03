@@ -71,6 +71,7 @@ def run_training(cfg):
 
     cfg.model.n_groups = len(entity_types)
     label2id = {k: i for i, k in enumerate(entity_types)}
+    id2label = {v: k for k, v in label2id.items()}
     accelerator.print(f"# entity types: {len(entity_types)}")
 
     # convert labels to ids in the datasets ---
@@ -106,7 +107,7 @@ def run_training(cfg):
 
     # --- show batch --------------------------------------------------------------------#
     for batch_idx, b in enumerate(train_dl):
-        show_batch(b, tokenizer, task='training', print_fn=accelerator.print)
+        show_batch(b, tokenizer, id2label, task='training', print_fn=accelerator.print)
         if batch_idx >= 4:
             break
     print_line()

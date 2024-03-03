@@ -18,19 +18,10 @@ class OmniNERCollator:
     pad_to_multiple_of: Optional[int] = None
 
     def __call__(self, features):
-        buffer_dict = dict()
-        buffer_keys = ["question_id", "answer"]
-
-        for key in buffer_keys:
-            if key in features[0].keys():
-                value = [feature[key] for feature in features]
-                buffer_dict[key] = value
-
         # labels ---
         labels = None
         if "labels" in features[0].keys():
             labels = [feature["labels"] for feature in features]
-            aux_labels = [feature["aux_labels"] for feature in features]
 
         span_head_idxs = [feature["span_head_idxs"] for feature in features]
         span_tail_idxs = [feature["span_tail_idxs"] for feature in features]
@@ -50,13 +41,25 @@ class OmniNERCollator:
             return_tensors=None,  # "pt",
         )
 
-        # restore buffer --
-        for key, value in buffer_dict.items():
-            batch[key] = value
-
         batch['span_head_idxs'] = span_head_idxs
         batch['span_tail_idxs'] = span_tail_idxs
 
+        # padding of spans ---
+        max_num_spans = max([len(ex_spans) for ex_spans in span_head_idxs])
+        max_seq_length = len(batch["input_ids"][0])
+        default_head_idx = max_seq_length - 1  # for padding
+        default_tail_idx = max_seq_length  # for padding
+
+        span_head_idxs = [idxs + [default_head_idx] * (max_num_spans - len(idxs)) for idxs in span_head_idxs]
+        span_tail_idxs = [idxs + [default_tail_idx] * (max_num_spans - len(idxs)) for idxs in span_tail_idxs]
+        batch['span_head_idxs'] = span_head_idxs
+        batch['span_tail_idxs'] = span_tail_idxs
+
+        if labels is not None:
+            labels = [ex_labels + [-1] * (max_num_spans - len(ex_labels)) for ex_labels in labels]  # -1 for padding
+            batch["labels"] = labels
+
+        # cast to tensor ---
         tensor_keys = [
             "input_ids",
             "attention_mask",
@@ -69,7 +72,6 @@ class OmniNERCollator:
 
         if labels is not None:
             batch["labels"] = torch.tensor(labels, dtype=torch.int64)
-            batch["aux_labels"] = torch.tensor(aux_labels, dtype=torch.float32)
 
         return batch
 
@@ -77,32 +79,32 @@ class OmniNERCollator:
 # -----
 
 
-def show_batch(batch, tokenizer, num_examples=8, task="train"):
+def show_batch(batch, tokenizer, id2label, num_examples=8, task="train", print_fn=print):
 
-    print('=='*40)
-    num_examples = min(num_examples, len(batch['question_id']))
-    print(f"Showing {num_examples} from a {task} batch...")
+    print_fn('=='*40)
+    num_examples = min(num_examples, len(batch['input_ids']))
+    print_fn(f"Showing {num_examples} from a {task} batch...")
 
     for i in range(num_examples):
-        question_id = batch['question_id'][i]
-        print('#---' + f" Question: {question_id}" + '---' * 40 + '#')
+        print_fn('#---' + f" Example: {i+1}" + '---' * 40 + '#')
 
-        question_text = tokenizer.decode(batch['input_ids'][i], skip_special_tokens=False)
-        print("question_text: ", question_text)
+        text = tokenizer.decode(batch['input_ids'][i], skip_special_tokens=False)
+        print_fn("INPUT:\n")
+        print_fn(text)
 
-        print("--"*20)
+        print_fn("--"*20)
         num_spans = len(batch['span_head_idxs'][i])
-        mcq_keys = ['A', 'B', 'C', 'D', 'E']
+
+        if "labels" in batch:
+            labels = batch['labels'][i]
+            labels = [id2label.get(label, 'NA') for label in labels]
 
         for span_idx in range(num_spans):
             start, end = batch['span_head_idxs'][i][span_idx], batch['span_tail_idxs'][i][span_idx]
             span = tokenizer.decode(batch['input_ids'][i][start:end])
-            print(f"\n[Option {mcq_keys[span_idx]}]: {span}")
+            if "infer" not in task.lower():
+                print_fn(f"[Entity {span_idx+1}]: {span} -> {labels[span_idx]}")
+            else:
+                print_fn(f"[Entity {span_idx+1}]: {'-'*len(span)}")
 
-        if "infer" not in task.lower():
-            print("--"*20)
-            label = batch['labels'][i]
-            print(f"Correct Option: {mcq_keys[label.item()]}")
-            print(f"Aux labels: {batch['aux_labels'][i]}")
-
-        print('=='*40)
+        print_fn('=='*40)
