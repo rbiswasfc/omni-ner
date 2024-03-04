@@ -278,7 +278,7 @@ def run_training(cfg):
                     # save only the backbone ---
                     unwrapped_model.backbone.save_pretrained(
                         f"{cfg.outputs.model_dir}/last",
-                        state_dict=accelerator.get_state_dict(model),
+                        # state_dict=accelerator.get_state_dict(model),
                         save_function=accelerator.save,
                     )
 

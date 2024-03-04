@@ -10,7 +10,7 @@ data:
   output_dir: ../datasets/cache/r_arc
 
 model:
-  backbone_path: microsoft/deberta-v3-large
+  backbone_path: microsoft/deberta-v3-base
   max_length: 1296
   num_proc: 4
   skip_dropout: false
@@ -31,16 +31,16 @@ train_params:
 
 optimizer:
   name: AdamW8bit
-  head_lr: 4e-6
-  lr: 4e-5
+  head_lr: 2e-6
+  lr: 2e-5
   weight_decay: 1e-3
   max_grad_norm: 0.5
 
 outputs:
-  model_dir: ../models/r_arc_omni_ner_large
+  model_dir: ../models/r_arc_omni_ner
 
 wandb:
   project: omni-ner
-  run_name: exp002-large
+  run_name: exp001-baseline
   tags:
     - deberta
