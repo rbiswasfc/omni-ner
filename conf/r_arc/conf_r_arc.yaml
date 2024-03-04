@@ -11,7 +11,7 @@ data:
 
 model:
   backbone_path: microsoft/deberta-v3-large
-  max_length: 1296
+  max_length: 1200
   num_proc: 4
   skip_dropout: false
   use_gradient_checkpointing: false
